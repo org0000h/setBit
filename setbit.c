@@ -1,29 +1,40 @@
 /*
  * setbit.c
  *
- *  Created on: 2017ƒÍ5‘¬10»’
+ *  Created on: 2017.5.10
  *      Author: asia
  */
 
 #include <stdio.h>
 
-int setBit(void *reg,int pos,int length,char val){
+/*
+ @function brief :
+ @parameter in   :
+ @parameter out:
+ @return               :
+ @author              :  asia
+ @date                  : 2017Âπ¥10Êúà19Êó•
+ @time                  : ‰∏ãÂçà11:27:22
+ */
+
+int setBit(void *reg,int pos,int length,char val) {
 	unsigned char 		length8 = 1;
 	unsigned short 		length16 = 1;
 	unsigned int  		length32 = 1;
 	unsigned long long 	length64 = 1;
 
-	if(val != 1 && val != 0)
-	{
+	if (val != 1 && val != 0) {
 		return -9;
 	}
-	if(reg == NULL)
+	if (reg == NULL){
 		return -7;
-	if(pos<0)
+	}
+	if (pos<0 || pos > 8*sizeof(length)){
 		return -6;
-	if(val == 1){
-		switch(length)
-		{
+	}
+
+	if (val == 1) {
+	switch (length) {
 			case 1 :
 				if(pos < 8){
 					length8 = length8 << pos;
@@ -40,7 +51,7 @@ int setBit(void *reg,int pos,int length,char val){
 					else
 						return -2;
 			break;
-			case 3 :
+			case 4 :
 					if(pos < 32){
 						length32 = length32 << pos;
 						*(unsigned int *)reg |= length32;
@@ -48,7 +59,7 @@ int setBit(void *reg,int pos,int length,char val){
 					else
 						return -3;
 			break;
-			case 4 :
+			case 8 :
 					if(pos < 64){
 						length64 = length64 << pos;
 						*(unsigned long long *)reg |= length64;
@@ -74,17 +85,15 @@ int setBit(void *reg,int pos,int length,char val){
 				break;
 				case 2 :
 						if(pos < 16){
-							printf("here\n");
+
 							length16 = length16 << pos;
-							printf("length16=%d\n",length16);
 							length16 = ~length16;
-							printf("length16=%d\n",length16);
 							*(unsigned short *)reg &= length16;
 							return 0;}
 						else
 							return -2;
 				break;
-				case 3 :
+				case 4 :
 						if(pos < 32){
 							length32 = length32 << pos;
 							length32 = ~length32;
@@ -93,7 +102,7 @@ int setBit(void *reg,int pos,int length,char val){
 						else
 							return -3;
 				break;
-				case 4 :
+				case 8 :
 						if(pos < 64){
 							length64 = length64 << pos;
 							length64 = ~length64;
@@ -106,7 +115,18 @@ int setBit(void *reg,int pos,int length,char val){
 					return -5;
 			}
 	}
+	return 255; //shouldn't get here
 }
+
+/*
+ @function brief  :
+ @parameter in   :
+ @parameter out:
+ @return               :
+ @author              :  asia
+ @date                  : 2017Âπ¥10Êúà19Êó•
+ @time                  : ‰∏ãÂçà11:26:24
+ */
 
 int getBit(void *reg,int pos,int length)
 {
@@ -117,8 +137,9 @@ int getBit(void *reg,int pos,int length)
 
 	if(reg == NULL)
 		return -7;
-	if(pos<0)
-		return -6;
+	if (pos<0 || pos > 8*sizeof(length)){
+			return -6;
+		}
 
 	switch(length)
 	{
@@ -140,7 +161,7 @@ int getBit(void *reg,int pos,int length)
 				else
 					return -2;
 		break;
-		case 3 :
+		case 4 :
 				if(pos < 32){
 					length32 = length32 << pos;
 					length32 &= *(unsigned int *)reg;
@@ -149,7 +170,7 @@ int getBit(void *reg,int pos,int length)
 				else
 					return -3;
 		break;
-		case 4 :
+		case 8 :
 				if(pos < 64){
 					length64 = length64 << pos;
 					length64 &= *(unsigned long long *)reg;
@@ -161,15 +182,6 @@ int getBit(void *reg,int pos,int length)
 		default :
 			return -5;
 	}
+	return 255; // shouldn't get here
 }
 
-int main(){
-	unsigned short reg=9;
-	int b=0,c=0;
-	b=setBit(&reg,3,sizeof(reg),1);
-	c=getBit(&reg,3,sizeof(reg));
-	printf("b=%d\n",b);
-	printf("c=%d\n",c);
-	printf("reg=%d\n",reg);
-	return 0;
-}

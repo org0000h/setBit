@@ -1,2 +1,2 @@
 # setBit
-This is a easy and tiny library to set or read variable data bit.
+This is an easy and tiny library to set or read variable  bit.
